@@ -3,7 +3,7 @@ import subprocess
 import os
 import glob
 import pandas as pd, numpy as np
-from utils import latest_stats
+import config
 
 """
 This script preprocesses the data. 
@@ -13,38 +13,38 @@ This script preprocesses the data.
 """
 
 ############# Preprocess the player data. #############
-cwd = 'Fantasy-Premier-League/data/2021-22/'
-df = pd.read_csv(os.path.join(cwd, 'players_raw.csv'))
-player_idlist = pd.read_csv(os.path.join(cwd, "player_idlist.csv"))
-output_file = 'latest_gw.csv'
-if os.path.exists(output_file):
+player_idlist = pd.read_csv(os.path.join(config.cwd, "player_idlist.csv"))
+if os.path.exists(config.output_file):
     print("Found existing latest gw file. removing...")
-    os.remove(output_file)
+    os.remove(config.output_file)
     print("Removing complete")
 
 print("Filtering data...")
-player_gw_files = glob.glob(os.path.join(cwd, 'players/*/gw.csv'))
+player_gw_files = glob.glob(os.path.join(config.cwd, 'players/*/gw.csv'))
 latest_gw = pd.DataFrame()
 for player_gw in player_gw_files:
   player_id = player_gw.split('/')[-2].split('_')[-1]
   _gw = pd.read_csv(player_gw)
   _gw['id'] = player_id
-  if not os.path.exists(output_file):
-    _gw.to_csv(output_file, mode='w', index=False, header=True)
+  if not os.path.exists(config.output_file):
+    _gw.to_csv(config.output_file, mode='w', index=False, header=True)
   else:
-    _gw.to_csv(output_file, mode='a', index=False, header=False)
+    _gw.to_csv(config.output_file, mode='a', index=False, header=False)
 print("Filtering complete.")
 
 ################## Connect FPL and understat data ##############
-all_gw = pd.read_csv(output_file)
+all_gw = pd.read_csv(config.output_file)
 last_gw = np.sort(all_gw['round'].unique())[-1]
 print(np.sort(all_gw['round'].unique()))
 print(f"Recent up to GW: {last_gw}")
 
-df = latest_stats(weeks=6, sort_by="threat", func_name = "sum", gw= all_gw, preprocess=True)
-teams = pd.read_csv(os.path.join(cwd, "teams.csv"))
 
-understat_path = os.path.join(cwd, "understat/understat_player.csv")
+from utils import latest_stats
+
+df = latest_stats(weeks=1, sort_by="threat", func_name = "sum", gw= all_gw, preprocess=True)
+teams = pd.read_csv(os.path.join(config.cwd, "teams.csv"))
+
+understat_path = os.path.join(config.cwd, "understat/understat_player.csv")
 understat = pd.read_csv(understat_path, engine="python")
 
 replace_list = [("Romain Saiss", "Romain Saïss"),

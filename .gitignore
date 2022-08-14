@@ -1,6 +1,13 @@
+# Specific to Mike Stitt
+venv*
+
+# Specific to Mac
+.DS_Store
+
 # Specific to FPL_dash
-# Fantasy-Premier-League
+Fantasy-Premier-League
 .vscode
+.idea
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

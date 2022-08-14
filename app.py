@@ -17,20 +17,14 @@ from tabs import tab1_table
 from tabs import tab2_scatter
 from tabs import tab3_about
 from firebase import firebase
+import config
 from utils import TABLE_COLUMNS, TABLE_EXTENDED_COLUMNS, latest_stats
 
 firebase = firebase.FirebaseApplication('https://fpldash-bbf95-default-rtdb.firebaseio.com/', None)
 
-######## Load the data ########
-cwd = 'Fantasy-Premier-League/data/2021-22/'
-all_players_raw = pd.read_csv(os.path.join(cwd, 'players_raw.csv'))
-# for position
-element_type_dict = {1:"GK", 2:"DEF", 3:"MID", 4:"FWD"}
-all_players_raw["Position"] = all_players_raw['element_type'].apply(lambda x: element_type_dict[x])
-
 # latest_gw
-output_file = 'latest_gw.csv'
-all_gw = pd.read_csv(output_file)
+all_gw = pd.read_csv(config.output_file)
+
 latest_round = np.sort(all_gw['round'].unique())[-1]
 
 # understat
@@ -210,7 +204,7 @@ def update_graph(xaxis_column_name, yaxis_column_name, value, method):
     df = latest_stats(weeks=value, sort_by="total_points", func_name = method, understat=understat, divide_minutes=divide_minutes)
     if divide_minutes: 
         df = df[TABLE_EXTENDED_COLUMNS]
-        df = df.replace([np.inf, -np.inf], np.nan).dropna()
+        #df = df.replace([np.inf, -np.inf], np.nan).dropna()
     else:
         df = df[TABLE_COLUMNS]
     fig = px.scatter(df, 
@@ -250,5 +244,5 @@ else:
     port = 5000
 
 if __name__ == '__main__':
-    # app.run_server(debug=True, host="0.0.0.0", port=port)
-    app.run_server(debug=False, host="0.0.0.0", port=port)
+    app.run_server(debug=True, host="0.0.0.0", port=port)
+    #app.run_server(debug=False, host="0.0.0.0", port=port)

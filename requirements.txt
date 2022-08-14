@@ -14,3 +14,4 @@ requests_toolbelt==0.9.1
 python_jwt==3.2.4
 pycryptodome==3.7.3
 newrelic==6.0.1.155
+werkzeug==2.0.3
